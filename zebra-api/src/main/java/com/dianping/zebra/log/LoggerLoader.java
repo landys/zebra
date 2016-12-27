@@ -43,15 +43,15 @@ public class LoggerLoader {
 				.withNoConsoleNoAnsi(false).withHeader(null).withFooter(null).build();
 
 		// file info
-		Filter fileInfoFilter = ThresholdFilter.createFilter(Level.ERROR, Result.DENY, Result.ACCEPT);
-		Appender fileInfoAppender = RollingFileAppender.createAppender(LOG_ROOT + "/zebra.log",
-				LOG_ROOT + "/zebra.log.%d{yyyy-MM-dd}.gz", "true", "FileInfo", "true", "4000", "true",
-				TimeBasedTriggeringPolicy.createPolicy("1", "true"),
-				ZebraRolloverStrategy.createStrategy("30", "1", null, Deflater.DEFAULT_COMPRESSION + "", config),
-				layout, fileInfoFilter, "false", null, null, config);
-		config.addAppender(fileInfoAppender);
-		fileInfoAppender.start();
-		AppenderRef fileInfoRef = AppenderRef.createAppenderRef("FileInfo", null, fileInfoFilter);
+//		Filter fileInfoFilter = ThresholdFilter.createFilter(Level.ERROR, Result.DENY, Result.ACCEPT);
+//		Appender fileInfoAppender = RollingFileAppender.createAppender(LOG_ROOT + "/zebra.log",
+//				LOG_ROOT + "/zebra.log.%d{yyyy-MM-dd}.gz", "true", "FileInfo", "true", "4000", "true",
+//				TimeBasedTriggeringPolicy.createPolicy("1", "true"),
+//				ZebraRolloverStrategy.createStrategy("30", "1", null, Deflater.DEFAULT_COMPRESSION + "", config),
+//				layout, fileInfoFilter, "false", null, null, config);
+//		config.addAppender(fileInfoAppender);
+//		fileInfoAppender.start();
+//		AppenderRef fileInfoRef = AppenderRef.createAppenderRef("FileInfo", null, fileInfoFilter);
 
 		// console error
 		Appender consoleErrorAppender = ConsoleAppender.createAppender(layout, null, "SYSTEM_ERR", "ConsoleError",
@@ -69,13 +69,13 @@ public class LoggerLoader {
 				consoleWarnFilter);
 		AppenderRef consoleErrorAppenderRef = AppenderRef.createAppenderRef("ConsoleError", Level.WARN, null);
 
-		AppenderRef[] refs = new AppenderRef[] { consoleErrorAppenderRef, consoleWarnAppenderRef, fileInfoRef };
+		AppenderRef[] refs = new AppenderRef[] { consoleErrorAppenderRef, consoleWarnAppenderRef}; //, fileInfoRef };
 
 		LoggerConfig loggerConfig = LoggerConfig.createLogger("false", Level.INFO, "com.dianping.zebra", "true", refs,
 				null, config, null);
 		loggerConfig.addAppender(consoleErrorAppender, Level.ERROR, null);
 		loggerConfig.addAppender(consoleWarnAppender, Level.INFO, null);
-		loggerConfig.addAppender(fileInfoAppender, Level.INFO, null);
+//		loggerConfig.addAppender(fileInfoAppender, Level.INFO, null);
 
 		config.addLogger("com.dianping.zebra", loggerConfig);
 
