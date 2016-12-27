@@ -269,7 +269,7 @@ public class ShardColumnValueUtilTest {
 		Assert.assertEquals("3", values.get(2).getValue().get("UserId"));
 		Assert.assertEquals("1", values.get(2).getValue().get("OrderId"));
 	}
-	
+
 	@Test
 	public void testThreadLocalShardValue3() throws ShardParseException {
 		List<Object> params = new ArrayList<Object>();

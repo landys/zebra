@@ -9,7 +9,7 @@ package com.dianping.zebra;
 import com.dianping.zebra.util.AppPropertiesUtils;
 
 public final class Constants {
-	public static final String ZEBRA_VERSION = "2.8.4";
+	public static final String ZEBRA_VERSION = "2.8.5";
 
 	public static final String SQL_FORCE_WRITE_HINT = "/*+zebra:w*/";
 	
@@ -36,6 +36,8 @@ public final class Constants {
 	public static final String ZEBRA_FILTER_PRFIX = "zebra.filter.";
 
 	public static final String DEFAULT_DATASOURCE_SINGLE_PRFIX = "ds";
+
+	public static final String DEFAULT_DATASOURCE_LION_PREFIX = "data-source.";
 
 	// GroupDataSource
 	public final static String SPRING_PROPERTY_FILTER = "filter";
