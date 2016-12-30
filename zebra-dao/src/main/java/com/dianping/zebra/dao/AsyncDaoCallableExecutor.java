@@ -1,5 +1,8 @@
 package com.dianping.zebra.dao;
 
+import com.dianping.zebra.group.util.DaoContextHolder;
+
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
@@ -19,6 +22,14 @@ public class AsyncDaoCallableExecutor implements Callable<Object> {
 
 	@Override
 	public Object call() throws Exception {
-		return method.invoke(mapper, args);
+		try {
+			DaoContextHolder.setSqlName(method.getDeclaringClass().getSimpleName() + "." + method.getName());
+
+			return method.invoke(mapper, args);
+		} catch (InvocationTargetException e) {
+			throw (Exception) e.getCause();
+		} finally {
+			DaoContextHolder.clearSqlName();
+		}
 	}
 }

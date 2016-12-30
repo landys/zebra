@@ -2,10 +2,12 @@ package com.dianping.zebra.dao;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.Future;
 
 import com.dianping.zebra.dao.annotation.TargetMethod;
+import com.dianping.zebra.group.util.DaoContextHolder;
 
 public class AsyncMapperProxy<T> implements InvocationHandler, Serializable {
 
@@ -18,7 +20,7 @@ public class AsyncMapperProxy<T> implements InvocationHandler, Serializable {
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if (isCallbackMethod(method, args)) {
 			// 优先找是否有annotation
@@ -56,7 +58,13 @@ public class AsyncMapperProxy<T> implements InvocationHandler, Serializable {
 
 			throw new AsyncDaoException("Cannot find any target method for future method[" + method.getName() + "]");
 		} else {
-			return method.invoke(mapper, args);
+			DaoContextHolder.setSqlName(method.getDeclaringClass().getSimpleName() + "." + method.getName());
+
+			try {
+				return method.invoke(mapper, args);
+			} catch (InvocationTargetException e) {
+				throw e.getCause();
+			}
 		}
 	}
 

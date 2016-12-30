@@ -1,5 +1,7 @@
 package com.dianping.zebra.dao;
 
+import com.dianping.zebra.group.util.DaoContextHolder;
+
 import java.lang.reflect.Method;
 
 public class AsyncDaoRunnableExecutor<T> implements Runnable {
@@ -25,11 +27,14 @@ public class AsyncDaoRunnableExecutor<T> implements Runnable {
 		T result = null;
 		boolean success = false;
 		try {
+			DaoContextHolder.setSqlName(method.getDeclaringClass().getSimpleName() + "." + method.getName());
 			result = (T) method.invoke(mapper, args);
 			success = true;
 		} catch (Exception e) {
 			// 仅仅捕获数据库访问异常
 			callback.onException(e);
+		} finally {
+			DaoContextHolder.clearSqlName();
 		}
 
 		if (success) {
