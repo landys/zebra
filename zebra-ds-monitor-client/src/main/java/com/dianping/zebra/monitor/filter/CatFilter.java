@@ -54,24 +54,24 @@ public class CatFilter extends DefaultJdbcFilter {
 	@Override
 	public void closeSingleDataSource(SingleDataSource source, JdbcFilter chain) throws SQLException {
 		chain.closeSingleDataSource(source, chain);
-		Cat.logEvent("DataSource.Destoryed", source.getConfig().getId());
+//		Cat.logEvent("DataSource.Destoryed", source.getConfig().getId());
 		StatusExtensionRegister.getInstance().unregister(this.monitor);
 	}
 
 	@Override
 	public SingleConnection getSingleConnection(SingleDataSource source, JdbcFilter chain) throws SQLException {
-		try {
+//		try {
 			return chain.getSingleConnection(source, chain);
-		} catch (SQLException exp) {
-			Transaction t = Cat.newTransaction("SQL", DaoContextHolder.getSqlName());
-
-			Cat.logEvent("SQL.Database", source.getConfig().getJdbcUrl(), "ERROR", source.getConfig().getId());
-			Cat.logError(exp);
-
-			t.setStatus(exp);
-			t.complete();
-			throw exp;
-		}
+//		} catch (SQLException exp) {
+//			Transaction t = Cat.newTransaction("SQL", DaoContextHolder.getSqlName());
+//
+//			Cat.logEvent("SQL.Database", source.getConfig().getJdbcUrl(), "ERROR", source.getConfig().getId());
+//			Cat.logError(exp);
+//
+//			t.setStatus(exp);
+//			t.complete();
+//			throw exp;
+//		}
 	}
 
 	@Override
@@ -79,41 +79,41 @@ public class CatFilter extends DefaultJdbcFilter {
 			List<String> batchedSql, boolean isBatched, boolean autoCommit, Object sqlParams, JdbcFilter chain)
 					throws SQLException {
 		SqlAliasManager.setSqlAlias(sql);
-		Transaction t;
-		if (isBatched) {
-			t = Cat.newTransaction("SQL", "batched");
-			t.addData(Stringizers.forJson().compact().from(batchedSql));
-		} else {
-			t = Cat.newTransaction("SQL", SqlAliasManager.getSqlAlias());
-			t.addData(sql);
-		}
+//		Transaction t;
+//		if (isBatched) {
+//			t = Cat.newTransaction("SQL", "batched");
+//			t.addData(Stringizers.forJson().compact().from(batchedSql));
+//		} else {
+//			t = Cat.newTransaction("SQL", SqlAliasManager.getSqlAlias());
+//			t.addData(sql);
+//		}
 
 		T result = null;
 		try {
 			result = chain.executeSingleStatement(source, conn, sql, batchedSql, isBatched, autoCommit, sqlParams,
 					chain);
 
-			t.setStatus(Transaction.SUCCESS);
+//			t.setStatus(Transaction.SUCCESS);
 
-			if (result instanceof SingleResultSet) {
-				((SingleResultSet) result).setInfo(t);
-			}
+//			if (result instanceof SingleResultSet) {
+//				((SingleResultSet) result).setInfo(t);
+//			}
 
 			return result;
 		} catch (SQLException exp) {
-			Cat.logError(exp);
-			t.setStatus(exp);
+//			Cat.logError(exp);
+//			t.setStatus(exp);
 
 			throw exp;
 		} finally {
-			try {
-				logSqlMethodEvent(sql, batchedSql, isBatched, sqlParams);
-				logSqlDatabaseEvent(conn);
-			} catch (Throwable exp) {
-				Cat.logError(exp);
-			}
-
-			t.complete();
+//			try {
+//				logSqlMethodEvent(sql, batchedSql, isBatched, sqlParams);
+//				logSqlDatabaseEvent(conn);
+//			} catch (Throwable exp) {
+//				Cat.logError(exp);
+//			}
+//
+//			t.complete();
 		}
 	}
 
@@ -123,7 +123,7 @@ public class CatFilter extends DefaultJdbcFilter {
 		FailOverDataSource.FindMasterDataSourceResult result = chain.findMasterFailOverDataSource(source, chain);
 
 		if (result != null && result.isChangedMaster()) {
-			Cat.logEvent("DAL.Master", "Found-" + result.getDsId());
+//			Cat.logEvent("DAL.Master", "Found-" + result.getDsId());
 		}
 
 		return result;
@@ -131,34 +131,34 @@ public class CatFilter extends DefaultJdbcFilter {
 
 	@Override
 	public void initGroupDataSource(GroupDataSource source, JdbcFilter chain) {
-		Transaction transaction = Cat.newTransaction(CAT_TYPE, "DataSource.Init-" + source.getJdbcRef());
+//		Transaction transaction = Cat.newTransaction(CAT_TYPE, "DataSource.Init-" + source.getJdbcRef());
 		try {
 			chain.initGroupDataSource(source, chain);
 			this.monitor = new GroupDataSourceMonitor(source);
 			StatusExtensionRegister.getInstance().register(this.monitor);
-			transaction.setStatus(Message.SUCCESS);
+//			transaction.setStatus(Message.SUCCESS);
 		} catch (RuntimeException e) {
-			Cat.logError(e);
-			transaction.setStatus(e);
+//			Cat.logError(e);
+//			transaction.setStatus(e);
 			throw e;
 		} finally {
-			transaction.complete();
+//			transaction.complete();
 		}
 	}
 
 	@Override
 	public DataSource initSingleDataSource(SingleDataSource source, JdbcFilter chain) {
 		DataSource result = chain.initSingleDataSource(source, chain);
-		Cat.logEvent("DataSource.Created", source.getConfig().getId());
-		Cat.logEvent("DataSource.Type", source.getConfig().getType());
+//		Cat.logEvent("DataSource.Created", source.getConfig().getId());
+//		Cat.logEvent("DataSource.Type", source.getConfig().getType());
 		return result;
 	}
 
 	private void logSqlDatabaseEvent(SingleConnection conn) throws SQLException {
 		SingleConnection singleConnection = conn instanceof SingleConnection ? (SingleConnection) conn : null;
 		if (singleConnection != null && conn.getMetaData() != null) {
-			Cat.logEvent("SQL.Database", conn.getMetaData().getURL(), Event.SUCCESS,
-					singleConnection.getDataSourceId());
+//			Cat.logEvent("SQL.Database", conn.getMetaData().getURL(), Event.SUCCESS,
+//					singleConnection.getDataSourceId());
 		}
 	}
 
@@ -166,9 +166,9 @@ public class CatFilter extends DefaultJdbcFilter {
 		int length = (sql == null) ? 0 : sql.length();
 
 		if (length <= SqlMonitorUtils.BIG_SQL) {
-			Cat.logEvent("SQL.Length", SqlMonitorUtils.getSqlLengthName(length), Message.SUCCESS, "");
+//			Cat.logEvent("SQL.Length", SqlMonitorUtils.getSqlLengthName(length), Message.SUCCESS, "");
 		} else {
-			Cat.logEvent("SQL.Length", SqlMonitorUtils.getSqlLengthName(length), "long-sql warning", "");
+//			Cat.logEvent("SQL.Length", SqlMonitorUtils.getSqlLengthName(length), "long-sql warning", "");
 		}
 	}
 
@@ -178,13 +178,13 @@ public class CatFilter extends DefaultJdbcFilter {
 		if (isBatched) {
 			if (batchedSql != null) {
 				for (String bSql : batchedSql) {
-					Cat.logEvent("SQL.Method", SqlUtils.buildSqlType(bSql), Event.SUCCESS, params);
+//					Cat.logEvent("SQL.Method", SqlUtils.buildSqlType(bSql), Event.SUCCESS, params);
 					logSqlLengthEvent(sql);
 				}
 			}
 		} else {
 			if (sql != null) {
-				Cat.logEvent("SQL.Method", SqlUtils.buildSqlType(sql), Event.SUCCESS, params);
+//				Cat.logEvent("SQL.Method", SqlUtils.buildSqlType(sql), Event.SUCCESS, params);
 				logSqlLengthEvent(sql);
 			}
 		}
@@ -192,34 +192,34 @@ public class CatFilter extends DefaultJdbcFilter {
 
 	@Override
 	public void refreshGroupDataSource(GroupDataSource source, String propertiesName, JdbcFilter chain) {
-		Transaction t = Cat.newTransaction(CAT_TYPE, "DataSource.Refresh-" + source.getJdbcRef());
-		Cat.logEvent("DAL.Refresh.Property", propertiesName);
+//		Transaction t = Cat.newTransaction(CAT_TYPE, "DataSource.Refresh-" + source.getJdbcRef());
+//		Cat.logEvent("DAL.Refresh.Property", propertiesName);
 		try {
 			chain.refreshGroupDataSource(source, propertiesName, chain);
-			t.setStatus(Message.SUCCESS);
+//			t.setStatus(Message.SUCCESS);
 		} catch (RuntimeException exp) {
-			Cat.logError(exp);
-			t.setStatus(exp);
+//			Cat.logError(exp);
+//			t.setStatus(exp);
 			throw exp;
 		} finally {
-			t.complete();
+//			t.complete();
 		}
 	}
 
 	@Override
 	public void switchFailOverDataSource(FailOverDataSource source, JdbcFilter chain) {
-		Transaction t = Cat.newTransaction(CAT_TYPE, "FailOver");
+//		Transaction t = Cat.newTransaction(CAT_TYPE, "FailOver");
 		try {
 			chain.switchFailOverDataSource(source, chain);
-			Cat.logEvent("DAL.FailOver", "Success");
-			t.setStatus(Message.SUCCESS);
+//			Cat.logEvent("DAL.FailOver", "Success");
+//			t.setStatus(Message.SUCCESS);
 		} catch (RuntimeException exp) {
-			Cat.logEvent("DAL.FailOver", "Failed");
-			Cat.logError(exp);
-			t.setStatus("Fail to find any master database");
+//			Cat.logEvent("DAL.FailOver", "Failed");
+//			Cat.logError(exp);
+//			t.setStatus("Fail to find any master database");
 			throw exp;
 		} finally {
-			t.complete();
+//			t.complete();
 		}
 	}
 
