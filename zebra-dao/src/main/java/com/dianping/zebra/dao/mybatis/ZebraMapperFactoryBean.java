@@ -17,6 +17,14 @@ public class ZebraMapperFactoryBean<T> extends SqlSessionDaoSupport implements F
 
 	private boolean addToConfig = true;
 
+	public ZebraMapperFactoryBean() {
+
+	}
+
+	public ZebraMapperFactoryBean(Class<T> mapperInterface) {
+		this.mapperInterface = mapperInterface;
+	}
+
 	/**
 	 * Sets the mapper interface of the MyBatis mapper
 	 *
