@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<router-rule>
+    <table-shard-rule table="orders">
+        <!-- 如果需要以order_sn来更新数据, 刚需要把order_sn也加在主维度里。目前不需要。 -->
+        <!-- it's ok for uid is 0, for it may just pass the sharding info. -->
+        <shard-dimension dbRule="#uid# != null ? (#uid#.longValue() >> 7).and(3) : ((#id#.longValue() % 10000) >> 7).and(3)"
+                         dbIndexes="id[0-3]"
+                         tbRule="#uid# != null ? #uid#.longValue().and(127) : (#id#.longValue() % 10000).and(127)"
+                         tbSuffix="everydb:[_0,_127]"
+                         isMaster="true">
+        </shard-dimension>
+        <shard-dimension dbRule="(#order_sn#[-4..-1].toInteger() >> 7).and(3)"
+                         dbIndexes="id[0-3]"
+                         tbRule="#order_sn#[-4..-1].toInteger().and(127)"
+                         tbSuffix="everydb:[_0,_127]"
+                         isMaster="false">
+        </shard-dimension>
+    </table-shard-rule>
+</router-rule>

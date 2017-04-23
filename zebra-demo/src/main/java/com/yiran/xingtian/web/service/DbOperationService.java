@@ -1,13 +1,12 @@
 package com.yiran.xingtian.web.service;
 
-import com.yiran.xingtian.common.model.User;
-import com.yiran.xingtian.common.util.IdGenUtil;
-import com.yiran.xingtian.web.mapper.UserMapper;
-import org.apache.commons.lang3.RandomStringUtils;
+import com.yiran.xingtian.common.mapper.OrderMapper;
+import com.yiran.xingtian.common.model.Order;
+import com.yiran.xingtian.common.model.OrderExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -16,53 +15,25 @@ import java.util.List;
 @Service
 public class DbOperationService {
     @Autowired
-    private UserMapper userMapper;
+    private OrderMapper orderMapper;
 
-    public User queryUserById(Long uid) {
-        if (uid == null || uid <= 0) {
-            return null;
+    public int queryTest() {
+        List<Long> uids = generateUids(1000);
+        OrderExample orderExample = new OrderExample();
+        orderExample.createCriteria().andGroupOrderIdEqualTo(34245143214L)
+                .andUidIn(uids);
+
+        List<Order> orders = orderMapper.selectByExample(orderExample);
+
+        return orders.size();
+    }
+
+    private List<Long> generateUids(int size) {
+        List<Long> uids = new ArrayList<Long>();
+        for (int i = 0; i < size; ++i) {
+            uids.add((long)i);
         }
 
-        return userMapper.findByUid(uid);
-    }
-
-    public int insertRandomUser() {
-        long uid = IdGenUtil.generateUid();
-        String name = RandomStringUtils.randomAlphanumeric(10);
-
-        User user = new User(null, uid, name);
-
-        return userMapper.insert(user);
-    }
-
-    public List<User> queryAllUsersByIdRange(Long beginUid, Long endUid) {
-        if (beginUid == null || endUid == null) {
-            return null;
-        }
-
-        return userMapper.findAllByUidRange(beginUid, endUid);
-    }
-
-    public int updateUsersUids(List<Long> uids) {
-        return userMapper.updateUsersUids(uids);
-    }
-
-    public int updateUsersBatch(List<User> users) {
-        return userMapper.updateUsersBatch(users);
-    }
-
-    @Transactional
-    public int testTransaction() {
-        User user0 = new User(null, 8L, RandomStringUtils.randomAlphanumeric(10));
-        User user1 = new User(null, 12L, RandomStringUtils.randomAlphanumeric(10));
-
-        int result0 = userMapper.insert(user0);
-        int result1 = userMapper.insert(user1);
-
-        if (result0 == 1 && result1 == 1) {
-            throw new RuntimeException("hello world");
-        }
-
-        return result0 + result1;
+        return uids;
     }
 }

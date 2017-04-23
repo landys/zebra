@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yiran.xingtian.common.mapper.OrderMapper" >
+  <resultMap id="BaseResultMap" type="com.yiran.xingtian.common.model.Order" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
+    <result column="pay_app_id" property="payAppId" jdbcType="INTEGER" />
+    <result column="mall_id" property="mallId" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="group_order_id" property="groupOrderId" jdbcType="BIGINT" />
+    <result column="order_sn" property="orderSn" jdbcType="CHAR" />
+    <result column="order_status" property="orderStatus" jdbcType="TINYINT" />
+    <result column="pay_status" property="payStatus" jdbcType="TINYINT" />
+    <result column="shipping_status" property="shippingStatus" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="order_time" property="orderTime" jdbcType="INTEGER" />
+    <result column="pay_time" property="payTime" jdbcType="INTEGER" />
+    <result column="confirm_time" property="confirmTime" jdbcType="INTEGER" />
+    <result column="shipping_time" property="shippingTime" jdbcType="INTEGER" />
+    <result column="receive_time" property="receiveTime" jdbcType="INTEGER" />
+    <result column="goods_amount" property="goodsAmount" jdbcType="INTEGER" />
+    <result column="shipping_amount" property="shippingAmount" jdbcType="INTEGER" />
+    <result column="discount_amount" property="discountAmount" jdbcType="INTEGER" />
+    <result column="order_amount" property="orderAmount" jdbcType="INTEGER" />
+    <result column="receive_name" property="receiveName" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="CHAR" />
+    <result column="province_id" property="provinceId" jdbcType="SMALLINT" />
+    <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+    <result column="city_id" property="cityId" jdbcType="SMALLINT" />
+    <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+    <result column="district_id" property="districtId" jdbcType="SMALLINT" />
+    <result column="district_name" property="districtName" jdbcType="VARCHAR" />
+    <result column="shipping_address" property="shippingAddress" jdbcType="VARCHAR" />
+    <result column="address_type" property="addressType" jdbcType="TINYINT" />
+    <result column="shipping_id" property="shippingId" jdbcType="INTEGER" />
+    <result column="tracking_number" property="trackingNumber" jdbcType="VARCHAR" />
+    <result column="id_card_no" property="idCardNo" jdbcType="VARCHAR" />
+    <result column="id_card_name" property="idCardName" jdbcType="VARCHAR" />
+    <result column="is_wms" property="isWms" jdbcType="TINYINT" />
+    <result column="lucky_status" property="luckyStatus" jdbcType="TINYINT" />
+    <result column="comment_count" property="commentCount" jdbcType="SMALLINT" />
+    <result column="created_at" property="createdAt" jdbcType="INTEGER" />
+    <result column="updated_at" property="updatedAt" jdbcType="INTEGER" />
+    <result column="version" property="version" jdbcType="INTEGER" />
+    <result column="is_deleted" property="isDeleted" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, uid, pay_app_id, mall_id, group_id, group_order_id, order_sn, order_status, pay_status, 
+    shipping_status, status, order_time, pay_time, confirm_time, shipping_time, receive_time, 
+    goods_amount, shipping_amount, discount_amount, order_amount, receive_name, mobile, 
+    province_id, province_name, city_id, city_name, district_id, district_name, shipping_address, 
+    address_type, shipping_id, tracking_number, id_card_no, id_card_name, is_wms, lucky_status, 
+    comment_count, created_at, updated_at, version, is_deleted
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.yiran.xingtian.common.model.OrderExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from orders
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from orders
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from orders
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.yiran.xingtian.common.model.OrderExample" >
+    delete from orders
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.yiran.xingtian.common.model.Order" >
+    insert into orders (id, uid, pay_app_id, 
+      mall_id, group_id, group_order_id, 
+      order_sn, order_status, pay_status, 
+      shipping_status, status, order_time, 
+      pay_time, confirm_time, shipping_time, 
+      receive_time, goods_amount, shipping_amount, 
+      discount_amount, order_amount, receive_name, 
+      mobile, province_id, province_name, 
+      city_id, city_name, district_id, 
+      district_name, shipping_address, address_type, 
+      shipping_id, tracking_number, id_card_no, 
+      id_card_name, is_wms, lucky_status, 
+      comment_count, created_at, updated_at, 
+      version, is_deleted)
+    values (#{id,jdbcType=BIGINT}, #{uid,jdbcType=BIGINT}, #{payAppId,jdbcType=INTEGER}, 
+      #{mallId,jdbcType=INTEGER}, #{groupId,jdbcType=INTEGER}, #{groupOrderId,jdbcType=BIGINT}, 
+      #{orderSn,jdbcType=CHAR}, #{orderStatus,jdbcType=TINYINT}, #{payStatus,jdbcType=TINYINT}, 
+      #{shippingStatus,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{orderTime,jdbcType=INTEGER}, 
+      #{payTime,jdbcType=INTEGER}, #{confirmTime,jdbcType=INTEGER}, #{shippingTime,jdbcType=INTEGER}, 
+      #{receiveTime,jdbcType=INTEGER}, #{goodsAmount,jdbcType=INTEGER}, #{shippingAmount,jdbcType=INTEGER}, 
+      #{discountAmount,jdbcType=INTEGER}, #{orderAmount,jdbcType=INTEGER}, #{receiveName,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=CHAR}, #{provinceId,jdbcType=SMALLINT}, #{provinceName,jdbcType=VARCHAR}, 
+      #{cityId,jdbcType=SMALLINT}, #{cityName,jdbcType=VARCHAR}, #{districtId,jdbcType=SMALLINT}, 
+      #{districtName,jdbcType=VARCHAR}, #{shippingAddress,jdbcType=VARCHAR}, #{addressType,jdbcType=TINYINT}, 
+      #{shippingId,jdbcType=INTEGER}, #{trackingNumber,jdbcType=VARCHAR}, #{idCardNo,jdbcType=VARCHAR}, 
+      #{idCardName,jdbcType=VARCHAR}, #{isWms,jdbcType=TINYINT}, #{luckyStatus,jdbcType=TINYINT}, 
+      #{commentCount,jdbcType=SMALLINT}, #{createdAt,jdbcType=INTEGER}, #{updatedAt,jdbcType=INTEGER}, 
+      #{version,jdbcType=INTEGER}, #{isDeleted,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yiran.xingtian.common.model.Order" >
+    insert into orders
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="payAppId != null" >
+        pay_app_id,
+      </if>
+      <if test="mallId != null" >
+        mall_id,
+      </if>
+      <if test="groupId != null" >
+        group_id,
+      </if>
+      <if test="groupOrderId != null" >
+        group_order_id,
+      </if>
+      <if test="orderSn != null" >
+        order_sn,
+      </if>
+      <if test="orderStatus != null" >
+        order_status,
+      </if>
+      <if test="payStatus != null" >
+        pay_status,
+      </if>
+      <if test="shippingStatus != null" >
+        shipping_status,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="orderTime != null" >
+        order_time,
+      </if>
+      <if test="payTime != null" >
+        pay_time,
+      </if>
+      <if test="confirmTime != null" >
+        confirm_time,
+      </if>
+      <if test="shippingTime != null" >
+        shipping_time,
+      </if>
+      <if test="receiveTime != null" >
+        receive_time,
+      </if>
+      <if test="goodsAmount != null" >
+        goods_amount,
+      </if>
+      <if test="shippingAmount != null" >
+        shipping_amount,
+      </if>
+      <if test="discountAmount != null" >
+        discount_amount,
+      </if>
+      <if test="orderAmount != null" >
+        order_amount,
+      </if>
+      <if test="receiveName != null" >
+        receive_name,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="provinceId != null" >
+        province_id,
+      </if>
+      <if test="provinceName != null" >
+        province_name,
+      </if>
+      <if test="cityId != null" >
+        city_id,
+      </if>
+      <if test="cityName != null" >
+        city_name,
+      </if>
+      <if test="districtId != null" >
+        district_id,
+      </if>
+      <if test="districtName != null" >
+        district_name,
+      </if>
+      <if test="shippingAddress != null" >
+        shipping_address,
+      </if>
+      <if test="addressType != null" >
+        address_type,
+      </if>
+      <if test="shippingId != null" >
+        shipping_id,
+      </if>
+      <if test="trackingNumber != null" >
+        tracking_number,
+      </if>
+      <if test="idCardNo != null" >
+        id_card_no,
+      </if>
+      <if test="idCardName != null" >
+        id_card_name,
+      </if>
+      <if test="isWms != null" >
+        is_wms,
+      </if>
+      <if test="luckyStatus != null" >
+        lucky_status,
+      </if>
+      <if test="commentCount != null" >
+        comment_count,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+      <if test="version != null" >
+        version,
+      </if>
+      <if test="isDeleted != null" >
+        is_deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="payAppId != null" >
+        #{payAppId,jdbcType=INTEGER},
+      </if>
+      <if test="mallId != null" >
+        #{mallId,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="groupOrderId != null" >
+        #{groupOrderId,jdbcType=BIGINT},
+      </if>
+      <if test="orderSn != null" >
+        #{orderSn,jdbcType=CHAR},
+      </if>
+      <if test="orderStatus != null" >
+        #{orderStatus,jdbcType=TINYINT},
+      </if>
+      <if test="payStatus != null" >
+        #{payStatus,jdbcType=TINYINT},
+      </if>
+      <if test="shippingStatus != null" >
+        #{shippingStatus,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="orderTime != null" >
+        #{orderTime,jdbcType=INTEGER},
+      </if>
+      <if test="payTime != null" >
+        #{payTime,jdbcType=INTEGER},
+      </if>
+      <if test="confirmTime != null" >
+        #{confirmTime,jdbcType=INTEGER},
+      </if>
+      <if test="shippingTime != null" >
+        #{shippingTime,jdbcType=INTEGER},
+      </if>
+      <if test="receiveTime != null" >
+        #{receiveTime,jdbcType=INTEGER},
+      </if>
+      <if test="goodsAmount != null" >
+        #{goodsAmount,jdbcType=INTEGER},
+      </if>
+      <if test="shippingAmount != null" >
+        #{shippingAmount,jdbcType=INTEGER},
+      </if>
+      <if test="discountAmount != null" >
+        #{discountAmount,jdbcType=INTEGER},
+      </if>
+      <if test="orderAmount != null" >
+        #{orderAmount,jdbcType=INTEGER},
+      </if>
+      <if test="receiveName != null" >
+        #{receiveName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=CHAR},
+      </if>
+      <if test="provinceId != null" >
+        #{provinceId,jdbcType=SMALLINT},
+      </if>
+      <if test="provinceName != null" >
+        #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        #{cityId,jdbcType=SMALLINT},
+      </if>
+      <if test="cityName != null" >
+        #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="districtId != null" >
+        #{districtId,jdbcType=SMALLINT},
+      </if>
+      <if test="districtName != null" >
+        #{districtName,jdbcType=VARCHAR},
+      </if>
+      <if test="shippingAddress != null" >
+        #{shippingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="addressType != null" >
+        #{addressType,jdbcType=TINYINT},
+      </if>
+      <if test="shippingId != null" >
+        #{shippingId,jdbcType=INTEGER},
+      </if>
+      <if test="trackingNumber != null" >
+        #{trackingNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardNo != null" >
+        #{idCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardName != null" >
+        #{idCardName,jdbcType=VARCHAR},
+      </if>
+      <if test="isWms != null" >
+        #{isWms,jdbcType=TINYINT},
+      </if>
+      <if test="luckyStatus != null" >
+        #{luckyStatus,jdbcType=TINYINT},
+      </if>
+      <if test="commentCount != null" >
+        #{commentCount,jdbcType=SMALLINT},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=INTEGER},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        #{version,jdbcType=INTEGER},
+      </if>
+      <if test="isDeleted != null" >
+        #{isDeleted,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.yiran.xingtian.common.model.OrderExample" resultType="java.lang.Integer" >
+    select count(*) from orders
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update orders
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.uid != null" >
+        uid = #{record.uid,jdbcType=BIGINT},
+      </if>
+      <if test="record.payAppId != null" >
+        pay_app_id = #{record.payAppId,jdbcType=INTEGER},
+      </if>
+      <if test="record.mallId != null" >
+        mall_id = #{record.mallId,jdbcType=INTEGER},
+      </if>
+      <if test="record.groupId != null" >
+        group_id = #{record.groupId,jdbcType=INTEGER},
+      </if>
+      <if test="record.groupOrderId != null" >
+        group_order_id = #{record.groupOrderId,jdbcType=BIGINT},
+      </if>
+      <if test="record.orderSn != null" >
+        order_sn = #{record.orderSn,jdbcType=CHAR},
+      </if>
+      <if test="record.orderStatus != null" >
+        order_status = #{record.orderStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.payStatus != null" >
+        pay_status = #{record.payStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.shippingStatus != null" >
+        shipping_status = #{record.shippingStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=TINYINT},
+      </if>
+      <if test="record.orderTime != null" >
+        order_time = #{record.orderTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.payTime != null" >
+        pay_time = #{record.payTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.confirmTime != null" >
+        confirm_time = #{record.confirmTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.shippingTime != null" >
+        shipping_time = #{record.shippingTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.receiveTime != null" >
+        receive_time = #{record.receiveTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodsAmount != null" >
+        goods_amount = #{record.goodsAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.shippingAmount != null" >
+        shipping_amount = #{record.shippingAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.discountAmount != null" >
+        discount_amount = #{record.discountAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.orderAmount != null" >
+        order_amount = #{record.orderAmount,jdbcType=INTEGER},
+      </if>
+      <if test="record.receiveName != null" >
+        receive_name = #{record.receiveName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=CHAR},
+      </if>
+      <if test="record.provinceId != null" >
+        province_id = #{record.provinceId,jdbcType=SMALLINT},
+      </if>
+      <if test="record.provinceName != null" >
+        province_name = #{record.provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cityId != null" >
+        city_id = #{record.cityId,jdbcType=SMALLINT},
+      </if>
+      <if test="record.cityName != null" >
+        city_name = #{record.cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.districtId != null" >
+        district_id = #{record.districtId,jdbcType=SMALLINT},
+      </if>
+      <if test="record.districtName != null" >
+        district_name = #{record.districtName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shippingAddress != null" >
+        shipping_address = #{record.shippingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.addressType != null" >
+        address_type = #{record.addressType,jdbcType=TINYINT},
+      </if>
+      <if test="record.shippingId != null" >
+        shipping_id = #{record.shippingId,jdbcType=INTEGER},
+      </if>
+      <if test="record.trackingNumber != null" >
+        tracking_number = #{record.trackingNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="record.idCardNo != null" >
+        id_card_no = #{record.idCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.idCardName != null" >
+        id_card_name = #{record.idCardName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isWms != null" >
+        is_wms = #{record.isWms,jdbcType=TINYINT},
+      </if>
+      <if test="record.luckyStatus != null" >
+        lucky_status = #{record.luckyStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.commentCount != null" >
+        comment_count = #{record.commentCount,jdbcType=SMALLINT},
+      </if>
+      <if test="record.createdAt != null" >
+        created_at = #{record.createdAt,jdbcType=INTEGER},
+      </if>
+      <if test="record.updatedAt != null" >
+        updated_at = #{record.updatedAt,jdbcType=INTEGER},
+      </if>
+      <if test="record.version != null" >
+        version = #{record.version,jdbcType=INTEGER},
+      </if>
+      <if test="record.isDeleted != null" >
+        is_deleted = #{record.isDeleted,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update orders
+    set id = #{record.id,jdbcType=BIGINT},
+      uid = #{record.uid,jdbcType=BIGINT},
+      pay_app_id = #{record.payAppId,jdbcType=INTEGER},
+      mall_id = #{record.mallId,jdbcType=INTEGER},
+      group_id = #{record.groupId,jdbcType=INTEGER},
+      group_order_id = #{record.groupOrderId,jdbcType=BIGINT},
+      order_sn = #{record.orderSn,jdbcType=CHAR},
+      order_status = #{record.orderStatus,jdbcType=TINYINT},
+      pay_status = #{record.payStatus,jdbcType=TINYINT},
+      shipping_status = #{record.shippingStatus,jdbcType=TINYINT},
+      status = #{record.status,jdbcType=TINYINT},
+      order_time = #{record.orderTime,jdbcType=INTEGER},
+      pay_time = #{record.payTime,jdbcType=INTEGER},
+      confirm_time = #{record.confirmTime,jdbcType=INTEGER},
+      shipping_time = #{record.shippingTime,jdbcType=INTEGER},
+      receive_time = #{record.receiveTime,jdbcType=INTEGER},
+      goods_amount = #{record.goodsAmount,jdbcType=INTEGER},
+      shipping_amount = #{record.shippingAmount,jdbcType=INTEGER},
+      discount_amount = #{record.discountAmount,jdbcType=INTEGER},
+      order_amount = #{record.orderAmount,jdbcType=INTEGER},
+      receive_name = #{record.receiveName,jdbcType=VARCHAR},
+      mobile = #{record.mobile,jdbcType=CHAR},
+      province_id = #{record.provinceId,jdbcType=SMALLINT},
+      province_name = #{record.provinceName,jdbcType=VARCHAR},
+      city_id = #{record.cityId,jdbcType=SMALLINT},
+      city_name = #{record.cityName,jdbcType=VARCHAR},
+      district_id = #{record.districtId,jdbcType=SMALLINT},
+      district_name = #{record.districtName,jdbcType=VARCHAR},
+      shipping_address = #{record.shippingAddress,jdbcType=VARCHAR},
+      address_type = #{record.addressType,jdbcType=TINYINT},
+      shipping_id = #{record.shippingId,jdbcType=INTEGER},
+      tracking_number = #{record.trackingNumber,jdbcType=VARCHAR},
+      id_card_no = #{record.idCardNo,jdbcType=VARCHAR},
+      id_card_name = #{record.idCardName,jdbcType=VARCHAR},
+      is_wms = #{record.isWms,jdbcType=TINYINT},
+      lucky_status = #{record.luckyStatus,jdbcType=TINYINT},
+      comment_count = #{record.commentCount,jdbcType=SMALLINT},
+      created_at = #{record.createdAt,jdbcType=INTEGER},
+      updated_at = #{record.updatedAt,jdbcType=INTEGER},
+      version = #{record.version,jdbcType=INTEGER},
+      is_deleted = #{record.isDeleted,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yiran.xingtian.common.model.Order" >
+    update orders
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
+      <if test="payAppId != null" >
+        pay_app_id = #{payAppId,jdbcType=INTEGER},
+      </if>
+      <if test="mallId != null" >
+        mall_id = #{mallId,jdbcType=INTEGER},
+      </if>
+      <if test="groupId != null" >
+        group_id = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="groupOrderId != null" >
+        group_order_id = #{groupOrderId,jdbcType=BIGINT},
+      </if>
+      <if test="orderSn != null" >
+        order_sn = #{orderSn,jdbcType=CHAR},
+      </if>
+      <if test="orderStatus != null" >
+        order_status = #{orderStatus,jdbcType=TINYINT},
+      </if>
+      <if test="payStatus != null" >
+        pay_status = #{payStatus,jdbcType=TINYINT},
+      </if>
+      <if test="shippingStatus != null" >
+        shipping_status = #{shippingStatus,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="orderTime != null" >
+        order_time = #{orderTime,jdbcType=INTEGER},
+      </if>
+      <if test="payTime != null" >
+        pay_time = #{payTime,jdbcType=INTEGER},
+      </if>
+      <if test="confirmTime != null" >
+        confirm_time = #{confirmTime,jdbcType=INTEGER},
+      </if>
+      <if test="shippingTime != null" >
+        shipping_time = #{shippingTime,jdbcType=INTEGER},
+      </if>
+      <if test="receiveTime != null" >
+        receive_time = #{receiveTime,jdbcType=INTEGER},
+      </if>
+      <if test="goodsAmount != null" >
+        goods_amount = #{goodsAmount,jdbcType=INTEGER},
+      </if>
+      <if test="shippingAmount != null" >
+        shipping_amount = #{shippingAmount,jdbcType=INTEGER},
+      </if>
+      <if test="discountAmount != null" >
+        discount_amount = #{discountAmount,jdbcType=INTEGER},
+      </if>
+      <if test="orderAmount != null" >
+        order_amount = #{orderAmount,jdbcType=INTEGER},
+      </if>
+      <if test="receiveName != null" >
+        receive_name = #{receiveName,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=CHAR},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId,jdbcType=SMALLINT},
+      </if>
+      <if test="provinceName != null" >
+        province_name = #{provinceName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=SMALLINT},
+      </if>
+      <if test="cityName != null" >
+        city_name = #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="districtId != null" >
+        district_id = #{districtId,jdbcType=SMALLINT},
+      </if>
+      <if test="districtName != null" >
+        district_name = #{districtName,jdbcType=VARCHAR},
+      </if>
+      <if test="shippingAddress != null" >
+        shipping_address = #{shippingAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="addressType != null" >
+        address_type = #{addressType,jdbcType=TINYINT},
+      </if>
+      <if test="shippingId != null" >
+        shipping_id = #{shippingId,jdbcType=INTEGER},
+      </if>
+      <if test="trackingNumber != null" >
+        tracking_number = #{trackingNumber,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardNo != null" >
+        id_card_no = #{idCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardName != null" >
+        id_card_name = #{idCardName,jdbcType=VARCHAR},
+      </if>
+      <if test="isWms != null" >
+        is_wms = #{isWms,jdbcType=TINYINT},
+      </if>
+      <if test="luckyStatus != null" >
+        lucky_status = #{luckyStatus,jdbcType=TINYINT},
+      </if>
+      <if test="commentCount != null" >
+        comment_count = #{commentCount,jdbcType=SMALLINT},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=INTEGER},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=INTEGER},
+      </if>
+      <if test="version != null" >
+        version = #{version,jdbcType=INTEGER},
+      </if>
+      <if test="isDeleted != null" >
+        is_deleted = #{isDeleted,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yiran.xingtian.common.model.Order" >
+    update orders
+    set uid = #{uid,jdbcType=BIGINT},
+      pay_app_id = #{payAppId,jdbcType=INTEGER},
+      mall_id = #{mallId,jdbcType=INTEGER},
+      group_id = #{groupId,jdbcType=INTEGER},
+      group_order_id = #{groupOrderId,jdbcType=BIGINT},
+      order_sn = #{orderSn,jdbcType=CHAR},
+      order_status = #{orderStatus,jdbcType=TINYINT},
+      pay_status = #{payStatus,jdbcType=TINYINT},
+      shipping_status = #{shippingStatus,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      order_time = #{orderTime,jdbcType=INTEGER},
+      pay_time = #{payTime,jdbcType=INTEGER},
+      confirm_time = #{confirmTime,jdbcType=INTEGER},
+      shipping_time = #{shippingTime,jdbcType=INTEGER},
+      receive_time = #{receiveTime,jdbcType=INTEGER},
+      goods_amount = #{goodsAmount,jdbcType=INTEGER},
+      shipping_amount = #{shippingAmount,jdbcType=INTEGER},
+      discount_amount = #{discountAmount,jdbcType=INTEGER},
+      order_amount = #{orderAmount,jdbcType=INTEGER},
+      receive_name = #{receiveName,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=CHAR},
+      province_id = #{provinceId,jdbcType=SMALLINT},
+      province_name = #{provinceName,jdbcType=VARCHAR},
+      city_id = #{cityId,jdbcType=SMALLINT},
+      city_name = #{cityName,jdbcType=VARCHAR},
+      district_id = #{districtId,jdbcType=SMALLINT},
+      district_name = #{districtName,jdbcType=VARCHAR},
+      shipping_address = #{shippingAddress,jdbcType=VARCHAR},
+      address_type = #{addressType,jdbcType=TINYINT},
+      shipping_id = #{shippingId,jdbcType=INTEGER},
+      tracking_number = #{trackingNumber,jdbcType=VARCHAR},
+      id_card_no = #{idCardNo,jdbcType=VARCHAR},
+      id_card_name = #{idCardName,jdbcType=VARCHAR},
+      is_wms = #{isWms,jdbcType=TINYINT},
+      lucky_status = #{luckyStatus,jdbcType=TINYINT},
+      comment_count = #{commentCount,jdbcType=SMALLINT},
+      created_at = #{createdAt,jdbcType=INTEGER},
+      updated_at = #{updatedAt,jdbcType=INTEGER},
+      version = #{version,jdbcType=INTEGER},
+      is_deleted = #{isDeleted,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select resultMap="BaseResultMap" parameterType="com.yiran.xingtian.common.model.OrderExample" id="selectByExampleWithRowbounds" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from orders
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+</mapper>
