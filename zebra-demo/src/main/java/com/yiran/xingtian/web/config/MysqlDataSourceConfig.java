@@ -37,7 +37,7 @@ public class MysqlDataSourceConfig {
 
     private int parallelWorkQueueSize = 5000;
 
-    private int parallelExecuteTimeOut = 5000;
+    private int parallelExecuteTimeOut = 100000;
 
     /**
      * ShardDataSource for api server.

@@ -4,7 +4,10 @@ import com.yiran.xingtian.web.service.DbOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
 
 /**
  * Created by Xingtian on 2017-01-13.
@@ -22,8 +25,7 @@ public final class DbOperationController {
 
     @ResponseBody
     @RequestMapping("query-test")
-    public String queryTest() {
-        int size = dbOperationService.queryTest();
-        return String.valueOf(size);
+    public Map<String, Object> queryTest(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize) {
+        return dbOperationService.queryTest(tableSize, dataSize);
     }
 }
