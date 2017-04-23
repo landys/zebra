@@ -28,4 +28,10 @@ public final class DbOperationController {
     public Map<String, Object> queryTest(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize) {
         return dbOperationService.queryTest(tableSize, dataSize);
     }
+
+    @ResponseBody
+    @RequestMapping("query-test-thread")
+    public Map<String, Object> queryInThreadsTest(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize) {
+        return dbOperationService.queryInThreadsTest(tableSize, dataSize);
+    }
 }

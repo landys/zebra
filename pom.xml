@@ -13,8 +13,8 @@
     </organization>
     <inceptionYear>2014.02</inceptionYear>
     <properties>
-        <java.src.version>1.6</java.src.version>
-        <java.target.version>1.6</java.target.version>
+        <java.src.version>1.8</java.src.version>
+        <java.target.version>1.8</java.target.version>
         <spring.version>2.5.6</spring.version>
         <project.encoding>UTF-8</project.encoding>
         <groovy.version>2.3.9</groovy.version>
@@ -273,32 +273,6 @@
                     <source>${java.src.version}</source>
                     <target>${java.target.version}</target>
                     <encoding>${project.encoding}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                    <ajdtVersion>none</ajdtVersion>
-                    <additionalConfig>
-                        <file>
-                            <name>.settings/org.eclipse.jdt.core.prefs</name>
-                            <content><![CDATA[org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
- eclipse.preferences.version=1
- org.eclipse.jdt.core.compiler.source=1.6
- org.eclipse.jdt.core.compiler.compliance=1.6]]>  <![CDATA[org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.6
- eclipse.preferences.version=1
- org.eclipse.jdt.core.compiler.source=1.6
- org.eclipse.jdt.core.compiler.compliance=1.6]]></content>
-                        </file>
-                        <file>
-                            <name>.settings/org.eclipse.core.resources.prefs</name>
-                            <content><![CDATA[eclipse.preferences.version=1
-                                 encoding/<project>=UTF-8]]></content>
-                        </file>
-                    </additionalConfig>
                 </configuration>
             </plugin>
             <plugin>
