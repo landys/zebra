@@ -23,6 +23,7 @@
         <module>zebra-api</module>
         <module>zebra-ds-monitor-client</module>
         <module>zebra-dao</module>
+        <module>zebra-demo</module>
     </modules>
     <description>zebra</description>
     <dependencyManagement>
@@ -49,7 +50,7 @@
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
-                <artifactId>spring-web</artifactId>
+                <artifactId>spring-com.yiran.xingtian.web</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
@@ -331,15 +332,4 @@
             <url>https://raw.github.com/dianping/zebra/mvn-repo</url>
         </repository>
     </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>pdd.releases.repo</id>
-            <url>http://maven-pdd.corp.yiran.com:8081/repository/maven-releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>pdd.snapshots.repo</id>
-            <url>http://maven-pdd.corp.yiran.com:8081/repository/maven-snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>

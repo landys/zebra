@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       <bean id="dataSource" class="com.dianping.zebra.single.jdbc.SingleDataSource" init-method="init" destroy-method="close">
+              <!--必填，填写atlas的地址-->
+              <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/zebra-db1?allowMultiQueries=true"/>
+              <!--必填，填写atlas的用户名-->
+              <property name="user" value="root" />
+              <!--必填，填写atlas的密码-->
+              <property name="password" value="Sql#r00t" />
+              <!-- 选填，默认值为"c3p0",还支持"tomcat-jdbc"或者"druid"-->
+              <property name="driverClass" value="com.mysql.jdbc.Driver" />
+              <property name="poolType" value="c3p0" />
+              <!-- c3p0的minPoolSize,该值对应tomcat-jdbc或druid的"minIdle" -->
+              <property name="minPoolSize" value="5" />
+              <!-- c3p0的maxPoolSize,该值对应tomcat-jdbc或druid的"maxActive" -->
+              <property name="maxPoolSize" value="30" />
+              <!-- c3p0的initialPoolSize,该值对应tomcat-jdbc或druid的"initialSize" -->
+              <property name="initialPoolSize" value="5" />
+              <!-- c3p0的checkoutTimeout,该值对应tomcat-jdbc或druid的"maxWait" -->
+              <property name="checkoutTimeout" value="1000" />
+              <property name="maxIdleTime" value="1800" />
+              <property name="idleConnectionTestPeriod" value="60" />
+              <property name="acquireRetryAttempts" value="3" />
+              <property name="acquireRetryDelay" value="300" />
+              <property name="maxStatements" value="0" />
+              <property name="maxStatementsPerConnection" value="100" />
+              <property name="numHelperThreads" value="6" />
+              <property name="maxAdministrativeTaskTime" value="5" />
+              <property name="preferredTestQuery" value="SELECT 1" />
+       </bean>
+</beans>
