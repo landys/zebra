@@ -25,13 +25,25 @@ public final class DbOperationController {
 
     @ResponseBody
     @RequestMapping("query-test")
-    public Map<String, Object> queryTest(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize) {
-        return dbOperationService.queryTest(tableSize, dataSize);
+    public Map<String, Object> queryTest(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize, @RequestParam("r") int repeatTime) {
+        return dbOperationService.queryTest(tableSize, dataSize, repeatTime);
     }
 
     @ResponseBody
     @RequestMapping("query-test-thread")
-    public Map<String, Object> queryInThreadsTest(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize) {
-        return dbOperationService.queryInThreadsTest(tableSize, dataSize);
+    public Map<String, Object> queryInThreadsTest(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize, @RequestParam("r") int repeatTime) {
+        return dbOperationService.queryInThreadsTest(tableSize, dataSize, repeatTime);
+    }
+
+    @ResponseBody
+    @RequestMapping("query-test-hacked")
+    public Map<String, Object> queryTestHacked(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize, @RequestParam("r") int repeatTime) {
+        return dbOperationService.queryTestHackedWay(tableSize, dataSize, repeatTime);
+    }
+
+    @ResponseBody
+    @RequestMapping("query-test-thread-hacked")
+    public Map<String, Object> queryInThreadsTestHeacked(@RequestParam("t") int tableSize, @RequestParam("n") int dataSize, @RequestParam("r") int repeatTime) {
+        return dbOperationService.queryInThreadsTestHackedWay(tableSize, dataSize, repeatTime);
     }
 }

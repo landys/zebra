@@ -141,7 +141,11 @@ public class ShardPreparedStatement extends UnsupportedShardPreparedStatement im
 	public ResultSet executeQuery() throws SQLException {
 		checkClosed();
 
+		long startDate = System.currentTimeMillis();
 		ResultSet specRS = beforeQuery(sql);
+		long endDate = System.currentTimeMillis();
+		System.out.println("before_query: " + (endDate - startDate));
+
 		if (specRS != null) {
 			this.results = specRS;
 			this.updateCount = -1;
@@ -152,7 +156,10 @@ public class ShardPreparedStatement extends UnsupportedShardPreparedStatement im
 
 		RouterResult routerTarget = routingAndCheck(sql, getParams());
 
+		startDate = System.currentTimeMillis();
 		rewriteAndMergeParms(routerTarget.getParams());
+		endDate = System.currentTimeMillis();
+		System.out.println("merge_params: " + (endDate - startDate));
 
 		ShardResultSet rs = new ShardResultSet();
 		rs.setStatement(this);
@@ -164,16 +171,24 @@ public class ShardPreparedStatement extends UnsupportedShardPreparedStatement im
 			// if has only one sql,then serial execute it
 			for (RouterTarget targetedSql : routerTarget.getSqls()) {
 				for (String executableSql : targetedSql.getSqls()) {
+					startDate = System.currentTimeMillis();
 					Connection conn = connection.getRealConnection(targetedSql.getDatabaseName(), autoCommit);
 					PreparedStatement stmt = createPrepareStatement(conn, executableSql);
 					actualStatements.add(stmt);
 					setParams(stmt);
 
+					endDate = System.currentTimeMillis();
+					System.out.println("prepare_statement: " + (endDate - startDate));
+
 					rs.addResultSet(stmt.executeQuery());
+
+					long endDate2 = System.currentTimeMillis();
+					System.out.println("execute_sql: " + (endDate2 - endDate));
 				}
 			}
 		} else {
 			// if has multiple sqls,then parallel execute them
+			startDate = System.currentTimeMillis();
 			List<Callable<ResultSet>> tasks = new ArrayList<Callable<ResultSet>>();
 			for (RouterTarget targetedSql : routerTarget.getSqls()) {
 				for (String executableSql : targetedSql.getSqls()) {
@@ -185,6 +200,8 @@ public class ShardPreparedStatement extends UnsupportedShardPreparedStatement im
 					tasks.add(new PreparedStatementExecuteQueryCallable(stmt, DaoContextHolder.getSqlName()));
 				}
 			}
+			endDate = System.currentTimeMillis();
+			System.out.println("prepare_statement: " + (endDate - startDate));
 
 			List<Future<ResultSet>> futures = SQLThreadPoolExecutor.getInstance().invokeSQLs(tasks);
 			for (Future<ResultSet> f : futures) {
@@ -195,6 +212,9 @@ public class ShardPreparedStatement extends UnsupportedShardPreparedStatement im
 					throw new SQLException(e);
 				}
 			}
+
+			long endDate2 = System.currentTimeMillis();
+			System.out.println("execute_sql: " + (endDate2 - endDate));
 		}
 
 		this.results = rs;

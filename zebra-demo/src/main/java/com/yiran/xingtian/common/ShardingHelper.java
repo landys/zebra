@@ -230,18 +230,16 @@ public class ShardingHelper {
         }
     }
 
-    public boolean checkCommandOrQueryV2(final String className) {
-        boolean isV2 = false;
-        String name = className;
-        if (StringUtils.isNotBlank(name)) {
-            // support the command even if it's enhanced by spring or other aop.
-            int index = name.indexOf('$');
-            if (index >= 0) {
-                name = name.substring(0, index);
-            }
-
-            isV2 = name.endsWith("V2");
+    public <T> void addCriterion(T criteria, String criterion) {
+        // use reflect to add criterion.
+        try {
+            Method method = criteria.getClass().getSuperclass().getDeclaredMethod("addCriterion", String.class);
+            method.setAccessible(true);
+            method.invoke(criteria, criterion);
+        } catch (Exception e) {
+            // should not be here.
+            logger.error("Error to add sharding key criterion: {}", criterion, e);
+            throw new RuntimeException("Error to add sharding key criterion");
         }
-        return isV2;
     }
 }

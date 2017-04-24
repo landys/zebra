@@ -41,7 +41,7 @@ import com.dianping.zebra.shard.router.rule.TableShardRule;
  */
 public class DefaultShardRouter implements ShardRouter {
 
-	private SQLRewrite sqlRewrite = new DefaultSQLRewrite();
+	private SQLRewrite sqlRewrite;
 
 	private RouterRule routerRule;
 
@@ -57,17 +57,26 @@ public class DefaultShardRouter implements ShardRouter {
 	@Override
 	public RouterResult router(final String sql, List<Object> params) throws ShardRouterException, ShardParseException {
 		RouterResult routerResult = new RouterResult();
+		long startDate = System.currentTimeMillis();
 		SQLParsedResult parsedResult = SQLParser.parse(sql);
+		long endDate = System.currentTimeMillis();
+		System.out.println("parse_sql: " + (endDate - startDate));
 
 		TableShardRule tableShardRule = findShardRule(parsedResult.getRouterContext(), params);
 		ShardEvalResult shardResult = tableShardRule.eval(new ShardEvalContext(parsedResult, params));
+		long endDate2 = System.currentTimeMillis();
+		System.out.println("eval_rule: " + (endDate2 - endDate));
 
 		MergeContext mergeContext = new MergeContext(parsedResult.getMergeContext());
 
 		routerResult.setMergeContext(mergeContext);
 		routerResult.setSqls(buildSqls(shardResult.getDbAndTables(), parsedResult, tableShardRule.getTableName()));
-		routerResult.setParams(buildParams(params, routerResult));
+		//routerResult.setSqls(buildSqls(shardResult.getDbAndTables(), sql, tableShardRule.getTableName()));
 
+		startDate = System.currentTimeMillis();
+		routerResult.setParams(buildParams(params, routerResult));
+		endDate = System.currentTimeMillis();
+		System.out.println("build_params: " + (endDate - startDate));
 		return routerResult;
 	}
 
@@ -105,14 +114,17 @@ public class DefaultShardRouter implements ShardRouter {
 		return tableShardRule;
 	}
 
-	private List<RouterTarget> buildSqls(Map<String, Set<String>> dbAndTables, SQLParsedResult parseResult,
-			String logicTable) {
-		List<RouterTarget> sqls = new ArrayList<RouterTarget>();
+	//private List<RouterTarget> buildSqls(Map<String, Set<String>> dbAndTables, String originSql, String logicTable) {
+	private List<RouterTarget> buildSqls(Map<String, Set<String>> dbAndTables, SQLParsedResult parseResult, String logicTable) {
+		List<RouterTarget> sqls = new ArrayList<>();
 
+		long startDate = System.currentTimeMillis();
 		for (Entry<String, Set<String>> entry : dbAndTables.entrySet()) {
 			RouterTarget targetedSql = new RouterTarget(entry.getKey());
 
 			for (String physicalTable : entry.getValue()) {
+//				String sql = originSql.replaceAll(logicTable, physicalTable);
+//				targetedSql.addSql(sql);
 				String _sql = sqlRewrite.rewrite(parseResult, logicTable, physicalTable);
 
 				String hintComment = parseResult.getRouterContext().getSqlhint().getForceMasterComment();
@@ -125,6 +137,9 @@ public class DefaultShardRouter implements ShardRouter {
 
 			sqls.add(targetedSql);
 		}
+		long endDate = System.currentTimeMillis();
+
+		System.out.println("build_sql: " + (endDate - startDate));
 
 		return sqls;
 	}
@@ -133,7 +148,7 @@ public class DefaultShardRouter implements ShardRouter {
 	private List<Object> buildParams(List<Object> params, RouterResult rr) {
 		List<Object> newParams = null;
 		if (params != null) {
-			newParams = new ArrayList<Object>(params);
+			newParams = new ArrayList<>(params);
 			Limit limitExpr = rr.getMergeContext().getLimitExpr();
 			if (limitExpr != null) {
 				int offset = Integer.MIN_VALUE;

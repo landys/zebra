@@ -6,6 +6,12 @@ import com.yiran.xingtian.common.ThreadPoolFactory;
 import com.yiran.xingtian.common.mapper.OrderMapper;
 import com.yiran.xingtian.common.model.Order;
 import com.yiran.xingtian.common.model.OrderExample;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.RandomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * Created by Xingtian on 2017-01-13.
@@ -32,57 +39,94 @@ public class DbOperationService {
 
     private ExecutorService threadPool;
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @PostConstruct
     public void init() {
         threadPool = ThreadPoolFactory.newFixedThreadPoolWithQueueSize(512, 5000);
     }
 
-    public Map<String, Object> queryTest(int tableSize, int dateSize) {
-        Map<String, Object> results = new HashMap<String, Object>();
+    public Map<String, Object> queryTest(int tableSize, int dateSize, int repeatTime) {
+        return doQuery(tableSize, dateSize, repeatTime, this::queryOrderByUids);
+    }
 
-        List<Long> uids = generateUids(dateSize, tableSize);
+    public Map<String, Object> queryInThreadsTest(int tableSize, int dateSize, int repeatTime) {
+        return doQuery(tableSize, dateSize, repeatTime, this::queryInThreads);
+    }
+
+    public Map<String, Object> queryTestHackedWay(int tableSize, int dateSize, int repeatTime) {
+        return doQuery(tableSize, dateSize, repeatTime, this::queryOrderByUidsHackedWay);
+    }
+
+    public Map<String, Object> queryInThreadsTestHackedWay(int tableSize, int dateSize, int repeatTime) {
+        return doQuery(tableSize, dateSize, repeatTime, this::queryInThreadsHackedWay);
+    }
+
+    private Map<String, Object> doQuery(int tableSize, int dateSize, int repeatTime, Function<QueryParam, List<Order>> funQuery) {
+        Map<String, Object> results = new HashMap<>();
 
         long startDate = System.currentTimeMillis();
 
-        queryOrderByUids(34245143214L, uids);
+        for (int i=0; i<repeatTime; ++i) {
+            long groupOrderId = RandomUtils.nextLong();
+            List<Long> uids = generateUids(dateSize, tableSize);
+
+            long startEach = System.currentTimeMillis();
+            funQuery.apply(new QueryParam(groupOrderId, uids));
+            long endEach = System.currentTimeMillis();
+            System.out.println("each_run " + (endEach - startEach));
+        }
 
         long endDate = System.currentTimeMillis();
         results.put("table_size", tableSize);
         results.put("date_size", dateSize);
         results.put("elapsed_time", endDate - startDate);
 
-        return results;
-    }
-
-    public Map<String, Object> queryInThreadsTest(int tableSize, int dateSize) {
-        Map<String, Object> results = new HashMap<String, Object>();
-
-        List<Long> uids = generateUids(dateSize, tableSize);
-
-        long startDate = System.currentTimeMillis();
-
-        List<Order> orders = queryInThreads(34245143214L, uids);
-
-        long endDate = System.currentTimeMillis();
-        results.put("table_size", tableSize);
-        results.put("date_size", dateSize);
-        results.put("elapsed_time", endDate - startDate);
+        System.out.println("total_run " + (endDate - startDate));
 
         return results;
     }
 
-    private List<Order> queryOrderByUids(Long groupOrderId, List<Long> uids) {
+    private List<Order> queryOrderByUids(QueryParam queryParam) {
         OrderExample orderExample = new OrderExample();
-        orderExample.createCriteria().andGroupOrderIdEqualTo(groupOrderId)
-                .andUidIn(uids);
+        orderExample.createCriteria().andGroupOrderIdEqualTo(queryParam.getGroupOrderId())
+                .andUidIn(queryParam.getUids());
 
         List<Order> orders = orderMapper.selectByExample(orderExample);
         return orders;
     }
 
-    private List<Order> queryInThreads(Long groupOrderId, List<Long> uids) {
+    private List<Order> queryOrderByUidsHackedWay(QueryParam queryParam) {
+        OrderExample orderExample = new OrderExample();
+        OrderExample.Criteria criteria = orderExample.createCriteria().andGroupOrderIdEqualTo(queryParam.getGroupOrderId());
+        shardingHelper.addCriterion(criteria, generateCriterion("uid", queryParam.getUids()));
+
+        List<Order> orders = orderMapper.selectByExample(orderExample);
+        return orders;
+    }
+
+    private String generateCriterion(String key, List<Long> uids) {
+        StringBuilder sb = new StringBuilder(key);
+        sb.append(" in (").append(uids.get(0));
+        for (int i = 1; i <  uids.size(); ++i) {
+            sb.append(',').append(uids.get(i));
+        }
+        sb.append(')');
+
+        return sb.toString();
+    }
+
+    private List<Order> queryInThreads(QueryParam queryParam) {
+        return doQueryInThreads(queryParam, this::queryOrderByUids);
+    }
+
+    private List<Order> queryInThreadsHackedWay(QueryParam queryParam) {
+        return doQueryInThreads(queryParam, this::queryOrderByUidsHackedWay);
+    }
+
+    private List<Order> doQueryInThreads(QueryParam queryParam, Function<QueryParam, List<Order>> funQuery) {
         // separate uids according to the sharding rules.
-        Map<Integer, List<Long>> uidsMap = shardingHelper.separateUidsByDbAndTables(uids);
+        Map<Integer, List<Long>> uidsMap = shardingHelper.separateUidsByDbAndTables(queryParam.getUids());
 
         // query in separate selects in thread pool.
         final CountDownLatch latch = new CountDownLatch(uidsMap.size());
@@ -90,7 +134,7 @@ public class DbOperationService {
         for (List<Long> sepUids : uidsMap.values()) {
             Callable<List<Order>> ordersCallable = () -> {
                 try {
-                    return queryOrderByUids(groupOrderId, sepUids);
+                    return funQuery.apply(new QueryParam(queryParam.getGroupOrderId(), sepUids));
                 } finally {
                     latch.countDown();
                 }
@@ -115,12 +159,12 @@ public class DbOperationService {
     }
 
     private List<Long> generateUids(int size, int tableSize) {
-        List<Long> uids = new ArrayList<Long>();
+        List<Long> uids = new ArrayList<>();
         int n = 0;
-        long step = 0;
+        long start = RandomUtils.nextLong() / 2;
         while (true) {
-            for (int i = 0; i < tableSize; ++i) {
-                uids.add(step + i);
+            for (long i = 0; i < tableSize; ++i) {
+                uids.add(start + i);
 
                 if (++n == size) {
                     break;
@@ -131,9 +175,18 @@ public class DbOperationService {
                 break;
             }
 
-            step += 512;
+            start += 512;
         }
 
         return uids;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class QueryParam {
+        private Long groupOrderId;
+
+        private List<Long> uids;
     }
 }
